@@ -1,0 +1,871 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=1024">
+    <title>تطبيق ملاحظاتي | متعدد الحسابات</title>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        /* =========================================
+           1. الثيمات (Themes)
+           ========================================= */
+        :root { --bg-gradient: linear-gradient(135deg, #f0f4f8 0%, #d9e2ec 100%); --text-color: #102a43; --text-muted: #486581; --card-bg: rgba(255, 255, 255, 0.95); --primary: #243b53; --primary-hover: #102a43; --border-color: #bcccdc; --note-bg: #ffffff; --time-color: #627d98; --badge-bg: #334e68; --pin-color: #d64545; --note-red: #ffe3e3; --note-blue: #e0f2fe; --note-yellow: #fef3c7; --note-green: #d1fae5; --shadow-sm: 0 4px 6px rgba(0,0,0,0.05); --shadow-md: 0 10px 20px rgba(0,0,0,0.08); --shadow-lg: 0 20px 40px rgba(0,0,0,0.12); --radius-sm: 12px; --radius-md: 20px; --radius-lg: 24px; }
+        [data-theme="dark"] { --bg-gradient: linear-gradient(135deg, #121212 0%, #1e1e1e 100%); --text-color: #e0e0e0; --text-muted: #a0a0a0; --card-bg: rgba(30, 30, 30, 0.98); --primary: #4cc9f0; --primary-hover: #3a0ca3; --border-color: #333333; --note-bg: #252525; --time-color: #888888; --badge-bg: #3a0ca3; --pin-color: #f72585; --note-red: #3a2222; --note-blue: #222b3a; --note-yellow: #3a3822; --note-green: #223a28; }
+        [data-theme="dracula"] { --bg-gradient: linear-gradient(135deg, #282a36 0%, #44475a 100%); --text-color: #f8f8f2; --text-muted: #6272a4; --card-bg: rgba(40, 42, 54, 0.95); --primary: #ff79c6; --primary-hover: #bd93f9; --border-color: #6272a4; --note-bg: #44475a; --time-color: #8be9fd; --badge-bg: #bd93f9; --pin-color: #f1fa8c; --note-red: #5c3a41; --note-blue: #3a4b5c; --note-yellow: #5c593a; --note-green: #3a5c41; }
+        [data-theme="ocean"] { --bg-gradient: linear-gradient(135deg, #0b132b 0%, #1c2541 100%); --text-color: #e0fbfc; --text-muted: #98c1d9; --card-bg: rgba(28, 37, 65, 0.95); --primary: #5bc0be; --primary-hover: #3a506b; --border-color: #3a506b; --note-bg: #0b132b; --time-color: #98c1d9; --badge-bg: #3a506b; --pin-color: #ff9f1c; --note-red: #3b2a30; --note-blue: #1a2a3a; --note-yellow: #3b3520; --note-green: #1a3a2a; }
+        [data-theme="forest"] { --bg-gradient: linear-gradient(135deg, #132a13 0%, #31572c 100%); --text-color: #ecf39e; --text-muted: #90a955; --card-bg: rgba(79, 119, 45, 0.95); --primary: #ecf39e; --primary-hover: #90a955; --border-color: #132a13; --note-bg: #31572c; --time-color: #90a955; --badge-bg: #132a13; --pin-color: #ff9f1c; --note-red: #4a3030; --note-blue: #2a3a4a; --note-yellow: #4a4520; --note-green: #2a4a30; }
+        [data-theme="midnight"] { --bg-gradient: solid #000000; --text-color: #ffffff; --text-muted: #888888; --card-bg: #0a0a0a; --primary: #ffffff; --primary-hover: #cccccc; --border-color: #333333; --note-bg: #111111; --time-color: #888888; --badge-bg: #333333; --pin-color: #ff0000; --note-red: #220000; --note-blue: #001122; --note-yellow: #222200; --note-green: #002200; }
+        [data-theme="coffee"] { --bg-gradient: linear-gradient(135deg, #3e2723 0%, #4e342e 100%); --text-color: #d7ccc8; --text-muted: #bcaaa4; --card-bg: rgba(93, 64, 55, 0.95); --primary: #ffcc80; --primary-hover: #ffb74d; --border-color: #795548; --note-bg: #4e342e; --time-color: #bcaaa4; --badge-bg: #3e2723; --pin-color: #ff8a65; --note-red: #4a2a2a; --note-blue: #2a3a4a; --note-yellow: #4a402a; --note-green: #2a4a2a; }
+        [data-theme="rose"] { --bg-gradient: linear-gradient(135deg, #fff0f3 0%, #ffccd5 100%); --text-color: #590d22; --text-muted: #a4133c; --card-bg: rgba(255, 179, 198, 0.95); --primary: #c9184a; --primary-hover: #800f2f; --border-color: #ff8fa3; --note-bg: #fff0f3; --time-color: #a4133c; --badge-bg: #ff4d6d; --pin-color: #590d22; --note-red: #ffe6e6; --note-blue: #e6f0ff; --note-yellow: #ffffe6; --note-green: #e6ffe6; }
+        [data-theme="purple"] { --bg-gradient: linear-gradient(135deg, #240046 0%, #3c096c 100%); --text-color: #e0aaff; --text-muted: #c77dff; --card-bg: rgba(90, 24, 154, 0.95); --primary: #ff9e00; --primary-hover: #ff9100; --border-color: #7b2cbf; --note-bg: #3c096c; --time-color: #c77dff; --badge-bg: #240046; --pin-color: #ff9e00; --note-red: #4a2040; --note-blue: #20304a; --note-yellow: #4a4a20; --note-green: #204a20; }
+        [data-theme="sunset"] { --bg-gradient: linear-gradient(135deg, #2d00f7 0%, #f20089 100%); --text-color: #ffffff; --text-muted: #ffccd5; --card-bg: rgba(0, 0, 0, 0.6); --primary: #ffb703; --primary-hover: #fb8500; --border-color: #f20089; --note-bg: rgba(20, 20, 20, 0.8); --time-color: #ffccd5; --badge-bg: #f20089; --pin-color: #00f5d4; --note-red: #3a1010; --note-blue: #101a3a; --note-yellow: #3a3010; --note-green: #103a10; }
+        [data-theme="gold"] { --bg-gradient: linear-gradient(135deg, #1a1a1a 0%, #000000 100%); --text-color: #d4af37; --text-muted: #aa8c2c; --card-bg: rgba(38, 38, 38, 0.95); --primary: #d4af37; --primary-hover: #aa8c2c; --border-color: #d4af37; --note-bg: #1a1a1a; --time-color: #aa8c2c; --badge-bg: #333333; --pin-color: #ffffff; --note-red: #3a2a2a; --note-blue: #2a333a; --note-yellow: #3a362a; --note-green: #2a3a2c; }
+        [data-theme="neon"] { --bg-gradient: solid #000000; --text-color: #00ffcc; --text-muted: #ff00ff; --card-bg: #0a0a0a; --primary: #ff00ff; --primary-hover: #cc00cc; --border-color: #00ffcc; --note-bg: #111111; --time-color: #ff00ff; --badge-bg: #00ffcc; --pin-color: #ffff00; --note-red: #2a0000; --note-blue: #00112a; --note-yellow: #2a2a00; --note-green: #002a00; }
+
+        /* =========================================
+           التصميم الأساسي
+           ========================================= */
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Tajawal', sans-serif; transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease; }
+        body { background: var(--bg-gradient); color: var(--text-color); display: flex; justify-content: center; align-items: flex-start; min-height: 100vh; padding: 40px 20px; background-attachment: fixed; }
+        ::-webkit-scrollbar { width: 8px; } ::-webkit-scrollbar-track { background: transparent; } ::-webkit-scrollbar-thumb { background: rgba(136, 136, 136, 0.4); border-radius: 10px; } ::-webkit-scrollbar-thumb:hover { background: rgba(136, 136, 136, 0.7); }
+        .container { background: var(--card-bg); width: 100%; max-width: 1100px; padding: 40px; border-radius: var(--radius-lg); box-shadow: var(--shadow-lg); backdrop-filter: blur(10px); border: 1px solid var(--border-color); }
+        #loginScreen { text-align: center; max-width: 450px; margin: 50px auto; padding: 40px; background: var(--note-bg); border-radius: var(--radius-md); box-shadow: var(--shadow-md); border: 1px solid var(--border-color);}
+        #loginScreen h1 { font-weight: 800; margin-bottom: 10px; color: var(--primary); }
+        #loginScreen p { color: var(--text-muted); margin-bottom: 20px; }
+        #loginScreen input { width: 100%; padding: 15px; margin: 15px 0 25px 0; border: 2px solid var(--border-color); border-radius: var(--radius-sm); background: transparent; color: var(--text-color); text-align: center; font-size: 20px; outline: none; transition: all 0.3s ease; letter-spacing: 2px; }
+        #loginScreen input:focus { border-color: var(--primary); box-shadow: 0 0 0 4px rgba(67, 97, 238, 0.1); }
+        #appScreen { display: none; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 15px; padding-bottom: 10px; border-bottom: 2px dashed var(--border-color); }
+        .header h1 { font-size: 32px; font-weight: 800; color: var(--primary); letter-spacing: -0.5px; }
+        .header-btns { display: flex; gap: 10px; flex-wrap: wrap; align-items: center;}
+        .theme-select-menu { background: var(--note-bg); border: 2px solid var(--border-color); color: var(--text-color); padding: 10px 15px; border-radius: 30px; cursor: pointer; font-weight: 700; transition: all 0.3s ease; box-shadow: var(--shadow-sm); outline: none; appearance: none; -webkit-appearance: none;}
+        .theme-select-menu:hover { border-color: var(--primary); } .theme-select-menu option { background: var(--note-bg); color: var(--text-color); }
+        .logout-btn { background: #e63946; color: white; border: 2px solid #e63946; padding: 10px 20px; border-radius: 30px; cursor: pointer; font-weight: 700;} .logout-btn:hover { background: #d62828; border-color: #d62828; }
+        .folders-container { display: flex; align-items: center; gap: 10px; margin-bottom: 25px; overflow-x: auto; padding-bottom: 10px; flex-wrap: nowrap; } .folders-container::-webkit-scrollbar { height: 6px; }
+        .folder-chip { background: var(--note-bg); color: var(--text-muted); border: 2px solid var(--border-color); padding: 8px 15px; border-radius: 20px; cursor: pointer; font-weight: 700; white-space: nowrap; transition: 0.3s; display: flex; align-items: center; gap: 5px; font-size: 14px;}
+        .folder-chip:hover { border-color: var(--primary); } .folder-chip.active { background: var(--primary); color: var(--card-bg); border-color: var(--primary); box-shadow: var(--shadow-sm); }
+        .folder-actions { display: none; gap: 5px; margin-right: 5px; border-right: 1px solid rgba(255,255,255,0.3); padding-right: 5px; } .folder-chip.active .folder-actions { display: flex; }
+        .folder-btn { background: transparent; border: none; color: inherit; cursor: pointer; font-size: 12px; transition: 0.2s; } .folder-btn:hover { transform: scale(1.2); }
+        .add-folder-btn { background: transparent; color: var(--primary); border: 2px dashed var(--primary); padding: 8px 15px; border-radius: 20px; cursor: pointer; font-weight: bold; white-space: nowrap; transition: 0.3s; } .add-folder-btn:hover { background: var(--primary); color: var(--card-bg); }
+        .backup-tools { display: flex; gap: 15px; margin-bottom: 25px; flex-wrap: wrap; }
+        .backup-btn { flex: 1; background: var(--note-bg); color: var(--text-muted); border: 1px solid var(--border-color); padding: 12px; border-radius: var(--radius-sm); cursor: pointer; font-weight: 700; font-size: 15px; transition: all 0.3s ease; min-width: 200px; display: flex; justify-content: center; align-items: center; gap: 8px; }
+        .backup-btn:hover { background: var(--primary); color: var(--card-bg); border-color: var(--primary); transform: translateY(-2px); box-shadow: var(--shadow-sm); } .backup-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+        .search-box { margin-bottom: 30px; position: relative;} .search-box input { width: 100%; padding: 16px 20px; border: 2px solid var(--border-color); border-radius: var(--radius-sm); font-size: 16px; background: var(--note-bg); color: var(--text-color); outline: none; transition: all 0.3s ease; box-shadow: inset 0 2px 4px rgba(0,0,0,0.02); } .search-box input:focus { border-color: var(--primary); box-shadow: 0 0 0 4px rgba(67, 97, 238, 0.1); }
+        .input-section { background: var(--note-bg); padding: 25px; border-radius: var(--radius-md); box-shadow: var(--shadow-md); margin-bottom: 40px; border: 1px solid var(--border-color); }
+        .org-tools { display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap; align-items: center;}
+        .org-select, .org-input { flex: 1; min-width: 150px; padding: 12px; border: 2px solid var(--border-color); border-radius: var(--radius-sm); background: var(--card-bg); color: var(--text-color); font-weight: bold; outline: none; transition: 0.3s; } .org-select:focus, .org-input:focus { border-color: var(--primary); }
+        .title-input, textarea { width: 100%; padding: 15px; border: 2px solid var(--border-color); border-radius: var(--radius-sm); background: transparent; color: var(--text-color); outline: none; margin-bottom: 15px; transition: all 0.3s ease; }
+        .title-input { font-size: 20px; font-weight: 700; } textarea { font-size: 16px; resize: vertical; min-height: 120px; line-height: 1.6; } .title-input:focus, textarea:focus { border-color: var(--primary); background: var(--card-bg); }
+        .color-palette { display: flex; gap: 12px; margin-bottom: 20px; align-items: center; } .color-palette label { font-size: 15px; font-weight: 700; color: var(--text-muted); }
+        .color-circle { width: 32px; height: 32px; border-radius: 50%; cursor: pointer; border: 3px solid transparent; transition: all 0.3s ease; box-shadow: inset 0 2px 4px rgba(0,0,0,0.1); } .color-circle:hover { transform: scale(1.15); } .color-circle.active { border-color: var(--primary); transform: scale(1.2); box-shadow: 0 4px 8px rgba(0,0,0,0.2); }
+        .color-default { background-color: #e0e0e0; } .color-red { background-color: #ff6b6b; } .color-blue { background-color: #4facfe; } .color-yellow { background-color: #f6e58d; } .color-green { background-color: #1dd1a1; }
+        .media-tools { display: flex; gap: 12px; margin-bottom: 10px; flex-wrap: wrap; }
+        .media-btn { background: transparent; color: var(--text-color); border: 2px solid var(--border-color); padding: 10px 18px; border-radius: 30px; cursor: pointer; font-weight: 700; transition: all 0.3s ease; display: flex; align-items: center; gap: 8px; font-size: 14px; } .media-btn:hover { background: var(--border-color); transform: translateY(-2px); }
+        .media-btn.recording { background: rgba(230, 57, 70, 0.1); color: #e63946; border-color: #e63946; animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(230, 57, 70, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(230, 57, 70, 0); } 100% { box-shadow: 0 0 0 0 rgba(230, 57, 70, 0); } }
+        .attachment-status { font-size: 13px; color: var(--primary); font-weight: 700; display: flex; gap: 15px; margin-bottom: 20px;}
+        .score-container { display: flex; align-items: center; gap: 15px; margin-bottom: 25px; background: transparent; padding: 15px; border-radius: var(--radius-sm); border: 2px dashed var(--border-color); } .score-container label { font-weight: 700; white-space: nowrap; color: var(--text-muted); } input[type="range"] { flex: 1; cursor: pointer; accent-color: var(--primary); height: 6px; border-radius: 5px;} .score-value { font-weight: 800; color: var(--primary); font-size: 18px; min-width: 55px; text-align: center; }
+        button.btn { background: var(--primary); color: #fff; border: none; padding: 16px 24px; border-radius: var(--radius-sm); cursor: pointer; font-size: 18px; font-weight: 800; width: 100%; transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(67, 97, 238, 0.3); letter-spacing: 0.5px; } button.btn:hover { background: var(--primary-hover); transform: translateY(-2px); box-shadow: 0 6px 20px rgba(67, 97, 238, 0.4); } button.btn:active { transform: translateY(0); } button.btn:disabled { background: #a0a0a0; box-shadow: none; cursor: not-allowed; transform: none;} button.btn.edit-mode { background: #f4a261; box-shadow: 0 4px 15px rgba(244, 162, 97, 0.3); } button.btn.edit-mode:hover { background: #e76f51; }
+        ul { list-style: none; margin-top: 20px; display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 25px; align-items: start; }
+        li { background: var(--note-bg); padding: 25px; border-radius: var(--radius-md); position: relative; cursor: pointer; transition: all 0.3s ease; display: flex; flex-direction: column; min-height: 220px; box-shadow: var(--shadow-md); border: 1px solid var(--border-color); border-top: 6px solid var(--primary); } li:hover { transform: translateY(-8px); box-shadow: var(--shadow-lg); }
+        li[data-color="red"] { background-color: var(--note-red); border-top-color: #ff6b6b; } li[data-color="blue"] { background-color: var(--note-blue); border-top-color: #4facfe; } li[data-color="yellow"] { background-color: var(--note-yellow); border-top-color: #f6e58d; } li[data-color="green"] { background-color: var(--note-green); border-top-color: #1dd1a1; }
+        li.pinned-note { border-top-color: var(--pin-color); box-shadow: 0 0 0 2px rgba(247, 37, 133, 0.1), var(--shadow-md); } li.pinned-note::before { content: '📌'; position: absolute; top: -12px; right: 20px; font-size: 24px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2)); z-index: 10; }
+        .note-title-display { font-size: 20px; font-weight: 800; color: var(--text-color); margin-bottom: 12px; line-height: 1.4; } .note-content { white-space: pre-wrap; word-wrap: break-word; word-break: break-word; margin-bottom: 15px; line-height: 1.7; font-size: 15px; color: var(--text-muted); max-height: 200px; overflow-y: auto; overflow-x: hidden; padding-right: 5px; } .note-content::-webkit-scrollbar { width: 4px; } .note-content::-webkit-scrollbar-track { background: transparent; } .note-content::-webkit-scrollbar-thumb { background: rgba(136, 136, 136, 0.3); border-radius: 10px; }
+        .image-gallery { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 15px; } .image-gallery .note-image { flex-grow: 1; width: calc(50% - 8px); height: 100px; object-fit: cover; border-radius: var(--radius-sm); box-shadow: var(--shadow-sm); } .single-image { width: 100%; max-height: 200px; object-fit: cover; border-radius: var(--radius-sm); margin-bottom: 15px; box-shadow: var(--shadow-sm); } .note-audio { width: 100%; margin-bottom: 15px; outline: none; border-radius: 30px; box-shadow: var(--shadow-sm); }
+        .note-footer { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; font-size: 13px; color: var(--time-color); border-top: 1px solid var(--border-color); padding-top: 15px; margin-top: auto; }
+        .note-meta { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; font-weight: 500;} .score-badge { background-color: var(--badge-bg); color: var(--card-bg); padding: 4px 10px; border-radius: 20px; font-weight: 800; font-size: 12px; box-shadow: var(--shadow-sm); } .reminder-badge { background-color: #fca311; color: white; padding: 4px 10px; border-radius: 20px; font-weight: bold; font-size: 12px;}
+        
+        /* ======== إصلاح ألوان الأزرار للوضوح (التباين) بناءً على طلبك ======== */
+        .action-buttons { display: flex; gap: 8px; flex-wrap: wrap; width: 100%; margin-top: 5px;} 
+        .action-buttons button { background: transparent; border: 1.5px solid; padding: 8px 5px; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 800; transition: all 0.2s ease; flex: 1; text-align: center; } 
+        
+        .delete-btn { color: #ff4d4d; border-color: #ff4d4d; background-color: rgba(255, 77, 77, 0.1); } 
+        .delete-btn:hover { background-color: #ff4d4d; color: white; } 
+        
+        .edit-btn { color: #ffb703; border-color: #ffb703; background-color: rgba(255, 183, 3, 0.1); } 
+        .edit-btn:hover { background-color: #ffb703; color: white; } 
+        
+        .pin-btn { color: #4361ee; border-color: #4361ee; background-color: rgba(67, 97, 238, 0.1); } 
+        .pin-btn:hover { background-color: #4361ee; color: white; } 
+        .pin-btn.active { background-color: #4361ee; color: white; } 
+        
+        .copy-btn { color: #20c997; border-color: #20c997; background-color: rgba(32, 201, 151, 0.1); } 
+        .copy-btn:hover { background-color: #20c997; color: white; }
+
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 1000; justify-content: center; align-items: center; padding: 20px; backdrop-filter: blur(8px); } .modal-content { background: var(--card-bg); width: 100%; max-width: 800px; border-radius: var(--radius-lg); padding: 40px; position: relative; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,0.5); transition: background-color 0.3s; border: 1px solid var(--border-color); } .modal-content[data-color="red"] { background-color: var(--note-red); } .modal-content[data-color="blue"] { background-color: var(--note-blue); } .modal-content[data-color="yellow"] { background-color: var(--note-yellow); } .modal-content[data-color="green"] { background-color: var(--note-green); }
+        .close-modal { position: absolute; top: 20px; left: 25px; font-size: 32px; cursor: pointer; color: var(--text-muted); font-weight: 800; line-height: 1; transition: all 0.2s ease; background: var(--note-bg); width: 40px; height: 40px; display: flex; justify-content: center; align-items: center; border-radius: 50%; box-shadow: var(--shadow-sm); border: 1px solid var(--border-color);} .close-modal:hover { color: #e63946; transform: rotate(90deg); } .modal-body .note-content { max-height: none; overflow-y: visible; font-size: 18px; color: var(--text-color); } .modal-body .note-title-display { font-size: 28px; margin-bottom: 25px; color: var(--primary); } .modal-body .image-gallery { flex-direction: column; gap: 20px; } .modal-body .image-gallery .note-image, .modal-body .single-image { width: 100%; max-height: 500px; object-fit: contain; margin-bottom: 0; border-radius: var(--radius-md); box-shadow: var(--shadow-md); }
+    </style>
+
+    
+    <link rel="manifest" href="./manifest.json">
+    <meta name="theme-color" content="#b082a0">
+    <link rel="apple-touch-icon" href="./icon-192.png">
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('./sw.js')
+            .then(reg => console.log('SW Registered'))
+            .catch(err => console.log('SW Failed', err));
+        });
+      }
+    </script>
+
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <link rel="manifest" href="./manifest.json?v=v1783640839804">
+    <meta name="theme-color" content="#3b82f6">
+    <link rel="apple-touch-icon" href="./icon-192.png?v=v1783640839804">
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('./sw.js?v=v1783640839804')
+            .then(reg => console.log('SW Registered'))
+            .catch(err => console.log('SW Failed', err));
+        });
+      }
+    </script>
+</head>
+<body>
+
+    <div id="noteModal" class="modal-overlay">
+        <div class="modal-content" id="modalCard">
+            <span class="close-modal" id="closeModal">&times;</span>
+            <div id="modalBody" class="modal-body"></div>
+        </div>
+    </div>
+
+    <audio id="bgMusic" loop></audio>
+
+    <div class="container">
+        <div id="loginScreen">
+            <h1>ملاحظاتي السرية 🔒</h1>
+            <p>أدخل كلمة مرور لفتح مساحة العمل الخاصة بها. كل كلمة مرور لها بياناتها وصورها المنفصلة!</p>
+            <input type="password" id="passwordInput" placeholder="اكتب كلمة المرور هنا...">
+            <button class="btn" id="loginBtn">دخول لمساحة العمل</button>
+        </div>
+
+        <div id="appScreen">
+            <div class="header">
+                <h1>ملاحظاتي</h1>
+                <div class="header-btns">
+                    <select id="themeSelect" class="theme-select-menu">
+                        <option value="light">☀️ فاتح (Light)</option>
+                        <option value="dark" selected>🌙 داكن (Dark)</option>
+                        <option value="dracula">🧛 دراكولا (Dracula)</option>
+                        <option value="ocean">🌊 محيط (Ocean)</option>
+                        <option value="forest">🌲 غابة (Forest)</option>
+                        <option value="sunset">🌇 غروب (Sunset)</option>
+                        <option value="coffee">☕ قهوة (Coffee)</option>
+                        <option value="purple">💜 بنفسجي (Purple)</option>
+                        <option value="midnight">🌃 منتصف الليل (Midnight)</option>
+                        <option value="rose">🌸 روز (Rose)</option>
+                        <option value="gold">👑 ذهبي (Gold)</option>
+                        <option value="neon">⚡ نيون (Neon)</option>
+                    </select>
+
+                    <select id="musicSelect" class="theme-select-menu">
+                        <option value="none">🔇 بدون موسيقى</option>
+                        <option value="https://archive.org/download/DeepMeditationMusic/Deep%20Meditation%20Music.mp3">🌌 تأمل عميق للروح (طويل)</option>
+                        <option value="https://archive.org/download/528hz-healing-music/528hz%20Healing%20Music.mp3">✨ تردد 528Hz الشفائي (طويل)</option>
+                        <option value="https://archive.org/download/ZenMeditationMusic/Zen%20Meditation%20Music.mp3">🍃 موسيقى الزِن (Zen) للتركيز</option>
+                        <option value="https://archive.org/download/TibetanSingingBowls_201809/Tibetan%20Singing%20Bowls.mp3">🪔 أوعية التبت للتأمل (Tibetan Bowls)</option>
+                        <option value="https://archive.org/download/YogaMusic_2018/Yoga%20Music.mp3">🧘‍♀️ موسيقى يوجا واسترخاء</option>
+                        <option value="https://archive.org/download/1HourRelaxingMusicForSleep/1%20Hour%20Relaxing%20Music%20For%20Sleep.mp3">🌙 موسيقى ليلية (1 ساعة)</option>
+                        <option value="https://archive.org/download/meditation-music-relaxing-mind-body/01.%20Meditation%20Music.mp3">🌊 تصفية الذهن والجسد</option>
+                        <option value="https://archive.org/download/RelaxingPianoMusic_201705/Relaxing%20Piano%20Music.mp3">🎹 بيانو هادئ جداً للاسترخاء</option>
+                        <option value="https://archive.org/download/3HourMeditationMusic/3%20Hour%20Meditation%20Music.mp3">🕰️ موسيقى تأمل طويلة (3 ساعات)</option>
+                        <option value="https://archive.org/download/RelaxingMusicVol1/01%20-%20Relaxing%20Music.mp3">🕊️ راحة نفسية وسلام داخلي</option>
+                    </select>
+
+                    <button id="logoutBtn" class="logout-btn">🚪 خروج</button>
+                </div>
+            </div>
+            
+            <div class="folders-container">
+                <div id="foldersListDisplay" style="display: flex; gap: 10px;"></div>
+                <button id="addNewFolderBtn" class="add-folder-btn">+ مجلد جديد</button>
+            </div>
+
+            <div class="backup-tools">
+                <button class="backup-btn" id="exportBtn">📥 تصدير نسخة (Backup)</button>
+                <button class="backup-btn" id="importBtn">📤 استيراد (Keep / Backup)</button>
+                <input type="file" id="importInput" accept=".json" multiple style="display: none;">
+            </div>
+
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="🔍 ابحث في العناوين أو المحتوى بسهولة...">
+            </div>
+
+            <div class="input-section">
+                <div class="org-tools">
+                    <select id="folderSelect" class="org-select" title="اختر المجلد">
+                        <option value="general">📁 عام</option>
+                    </select>
+                    <input type="datetime-local" id="reminderInput" class="org-input" title="تعيين منبه/تذكير (اختياري)">
+                    <button class="media-btn" id="enableNotificationsBtn" style="flex: 1; justify-content: center;">🔔 تفعيل الإشعارات</button>
+                </div>
+
+                <input type="text" id="noteTitleInput" class="title-input" placeholder="عنوان الملاحظة (اختياري)...">
+                <textarea id="noteInput" rows="4" placeholder="اكتب تفاصيل ملاحظتك هنا..."></textarea>
+                
+                <div class="color-palette">
+                    <label>لون الملاحظة:</label>
+                    <div class="color-circle color-default active" data-color="default" title="افتراضي"></div>
+                    <div class="color-circle color-red" data-color="red" title="أحمر (مهم)"></div>
+                    <div class="color-circle color-blue" data-color="blue" title="أزرق (عمل)"></div>
+                    <div class="color-circle color-yellow" data-color="yellow" title="أصفر (أفكار)"></div>
+                    <div class="color-circle color-green" data-color="green" title="أخضر (منجز)"></div>
+                </div>
+
+                <div class="media-tools">
+                    <button class="media-btn" id="uploadImgBtn">📷 إرفاق صور</button>
+                    <input type="file" id="imageInput" accept="image/*" multiple style="display: none;">
+                    <button class="media-btn" id="recordAudioBtn">🎤 تسجيل صوتي</button>
+                </div>
+                <div class="attachment-status">
+                    <span id="imgStatus"></span>
+                    <span id="audioStatus"></span>
+                </div>
+
+                <div class="score-container">
+                    <label for="scoreInput">نسبة التقييم/الإنجاز:</label>
+                    <input type="range" id="scoreInput" min="10" max="100" step="10" value="50">
+                    <span class="score-value" id="scoreDisplay">50%</span>
+                </div>
+
+                <button class="btn" id="addBtn">إضافة الملاحظة ✨</button>
+            </div>
+
+            <ul id="notesList"></ul>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-analytics.js";
+        import { getDatabase, ref as dbRef, push, onValue, remove, update, get } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+        import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCA8tjD2nzixDARhXApDLZrtDBIqJY_0I0",
+            authDomain: "myyppproject.firebaseapp.com",
+            databaseURL: "https://myyppproject-default-rtdb.firebaseio.com",
+            projectId: "myyppproject",
+            storageBucket: "myyppproject.firebasestorage.app",
+            messagingSenderId: "679811302650",
+            appId: "1:679811302650:web:23da36e87af1845194b543",
+            measurementId: "G-8X5ET6BQFY"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
+        const db = getDatabase(app);
+        const storage = getStorage(app);
+        
+        let userHash = localStorage.getItem('userHash') || '';
+        let notesRef;
+        let foldersRef;
+
+        const loginScreen = document.getElementById('loginScreen');
+        const appScreen = document.getElementById('appScreen');
+        const passwordInput = document.getElementById('passwordInput');
+        const loginBtn = document.getElementById('loginBtn');
+        const logoutBtn = document.getElementById('logoutBtn');
+
+        const themeSelect = document.getElementById('themeSelect');
+        const musicSelect = document.getElementById('musicSelect');
+        const bgMusic = document.getElementById('bgMusic');
+
+        const searchInput = document.getElementById('searchInput');
+        
+        const noteTitleInput = document.getElementById('noteTitleInput');
+        const noteInput = document.getElementById('noteInput');
+        const scoreInput = document.getElementById('scoreInput');
+        const scoreDisplay = document.getElementById('scoreDisplay');
+        const addBtn = document.getElementById('addBtn');
+        const notesList = document.getElementById('notesList');
+        
+        const folderSelect = document.getElementById('folderSelect');
+        const foldersListDisplay = document.getElementById('foldersListDisplay');
+        const addNewFolderBtn = document.getElementById('addNewFolderBtn');
+        const reminderInput = document.getElementById('reminderInput');
+        const enableNotificationsBtn = document.getElementById('enableNotificationsBtn');
+        
+        const uploadImgBtn = document.getElementById('uploadImgBtn');
+        const imageInput = document.getElementById('imageInput');
+        const recordAudioBtn = document.getElementById('recordAudioBtn');
+        const imgStatus = document.getElementById('imgStatus');
+        const audioStatus = document.getElementById('audioStatus');
+
+        const exportBtn = document.getElementById('exportBtn');
+        const importBtn = document.getElementById('importBtn');
+        const importInput = document.getElementById('importInput');
+
+        const noteModal = document.getElementById('noteModal');
+        const modalCard = document.getElementById('modalCard');
+        const closeModal = document.getElementById('closeModal');
+        const modalBody = document.getElementById('modalBody');
+
+        let editingNoteId = null;
+        let draggedId = null;
+        let draggedSortOrder = null;
+        let selectedNoteColor = 'default';
+
+        let selectedImageFiles = [];
+        let mediaRecorder;
+        let audioChunks = [];
+        let recordedAudioBlob = null;
+        let isRecording = false;
+
+        let allNotesArray = []; 
+        let allFoldersArray = []; 
+        let currentFolderFilter = 'all'; 
+
+        if (userHash) {
+            notesRef = dbRef(db, `users_data/${userHash}/notes`);
+            foldersRef = dbRef(db, `users_data/${userHash}/folders`);
+            loginScreen.style.display = 'none';
+            appScreen.style.display = 'block';
+            loadFolders();
+            loadNotes();
+            startReminderChecker();
+        }
+
+        let savedTheme = localStorage.getItem('theme') || 'dark';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+        themeSelect.value = savedTheme;
+
+        themeSelect.addEventListener('change', (e) => {
+            const selectedTheme = e.target.value;
+            document.documentElement.setAttribute('data-theme', selectedTheme);
+            localStorage.setItem('theme', selectedTheme);
+        });
+
+        musicSelect.addEventListener('change', (e) => {
+            if (e.target.value === 'none') {
+                bgMusic.pause();
+                bgMusic.currentTime = 0;
+            } else {
+                bgMusic.src = e.target.value;
+                bgMusic.play();
+            }
+        });
+
+        async function sha256(message) {
+            const msgBuffer = new TextEncoder().encode(message);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+        }
+
+        loginBtn.addEventListener('click', async () => {
+            const pwd = passwordInput.value.trim();
+            if(!pwd) { alert("اكتب كلمة مرور الأول يا هندسة!"); return; }
+            
+            loginBtn.innerText = "⏳ جاري الدخول...";
+            loginBtn.disabled = true;
+
+            userHash = await sha256(pwd); 
+            localStorage.setItem('userHash', userHash);
+            
+            notesRef = dbRef(db, `users_data/${userHash}/notes`);
+            foldersRef = dbRef(db, `users_data/${userHash}/folders`);
+
+            loginScreen.style.display = 'none';
+            appScreen.style.display = 'block';
+            
+            loadFolders();
+            loadNotes();
+            startReminderChecker();
+        });
+
+        passwordInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') loginBtn.click(); });
+
+        logoutBtn.addEventListener('click', () => { 
+            localStorage.removeItem('userHash');
+            location.reload(); 
+        });
+
+        closeModal.addEventListener('click', () => { noteModal.style.display = 'none'; });
+        window.addEventListener('click', (e) => { if(e.target === noteModal) noteModal.style.display = 'none'; });
+
+        const colorCircles = document.querySelectorAll('.color-circle');
+        colorCircles.forEach(circle => {
+            circle.addEventListener('click', (e) => {
+                colorCircles.forEach(c => c.classList.remove('active'));
+                e.target.classList.add('active');
+                selectedNoteColor = e.target.getAttribute('data-color');
+            });
+        });
+
+        function resetColorPalette() {
+            colorCircles.forEach(c => c.classList.remove('active'));
+            document.querySelector('.color-circle[data-color="default"]').classList.add('active');
+            selectedNoteColor = 'default';
+        }
+
+        searchInput.addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase();
+            document.querySelectorAll('#notesList li').forEach(li => {
+                const titleDiv = li.querySelector('.note-title-display');
+                const contentDiv = li.querySelector('.note-content');
+                const titleText = titleDiv ? titleDiv.innerText.toLowerCase() : '';
+                const contentText = contentDiv ? contentDiv.innerText.toLowerCase() : '';
+                li.style.display = (titleText.includes(searchTerm) || contentText.includes(searchTerm)) ? 'flex' : 'none';
+            });
+        });
+
+        scoreInput.addEventListener('input', function() { scoreDisplay.innerText = this.value + '%'; });
+
+        addNewFolderBtn.addEventListener('click', async () => {
+            const folderName = prompt("اكتب اسم المجلد الجديد:");
+            if(folderName && folderName.trim() !== '') {
+                await push(foldersRef, { name: folderName.trim() });
+            }
+        });
+
+        function loadFolders() {
+            onValue(foldersRef, (snapshot) => {
+                const data = snapshot.val();
+                allFoldersArray = data ? Object.keys(data).map(k => ({ id: k, name: data[k].name })) : [];
+                
+                foldersListDisplay.innerHTML = `
+                    <div class="folder-chip ${currentFolderFilter === 'all' ? 'active' : ''}" data-id="all">🌐 الكل</div>
+                    <div class="folder-chip ${currentFolderFilter === 'general' ? 'active' : ''}" data-id="general">📁 عام</div>
+                `;
+                
+                folderSelect.innerHTML = `<option value="general">📁 عام</option>`;
+
+                allFoldersArray.forEach(folder => {
+                    const chip = document.createElement('div');
+                    chip.className = `folder-chip ${currentFolderFilter === folder.id ? 'active' : ''}`;
+                    chip.dataset.id = folder.id;
+                    chip.innerHTML = `
+                        📁 ${escapeHTML(folder.name)}
+                        <div class="folder-actions">
+                            <button class="folder-btn edit-folder" data-id="${folder.id}" data-name="${escapeHTML(folder.name)}" title="تعديل">✏️</button>
+                            <button class="folder-btn del-folder" data-id="${folder.id}" title="حذف">🗑️</button>
+                        </div>
+                    `;
+                    foldersListDisplay.appendChild(chip);
+
+                    const option = document.createElement('option');
+                    option.value = folder.id;
+                    option.innerText = `📁 ${folder.name}`;
+                    folderSelect.appendChild(option);
+                });
+
+                document.querySelectorAll('.folder-chip').forEach(chip => {
+                    chip.addEventListener('click', (e) => {
+                        if(e.target.closest('.folder-actions')) return; 
+                        currentFolderFilter = chip.dataset.id;
+                        document.querySelectorAll('.folder-chip').forEach(c => c.classList.remove('active'));
+                        chip.classList.add('active');
+                        renderNotes(); 
+                    });
+                });
+
+                document.querySelectorAll('.edit-folder').forEach(btn => {
+                    btn.addEventListener('click', async (e) => {
+                        const id = e.target.dataset.id;
+                        const oldName = e.target.dataset.name;
+                        const newName = prompt("تعديل اسم المجلد:", oldName);
+                        if(newName && newName.trim() !== '' && newName !== oldName) {
+                            await update(dbRef(db, `users_data/${userHash}/folders/${id}`), { name: newName.trim() });
+                        }
+                    });
+                });
+
+                document.querySelectorAll('.del-folder').forEach(btn => {
+                    btn.addEventListener('click', async (e) => {
+                        const id = e.target.dataset.id;
+                        if(confirm("متأكد إنك عايز تحذف المجلد ده؟ (الملاحظات اللي جواه هتتنقل لـ 'عام')")) {
+                            allNotesArray.forEach(note => {
+                                if(note.folderId === id) {
+                                    update(dbRef(db, `users_data/${userHash}/notes/${note.id}`), { folderId: 'general' });
+                                }
+                            });
+                            await remove(dbRef(db, `users_data/${userHash}/folders/${id}`));
+                            if(currentFolderFilter === id) { currentFolderFilter = 'all'; }
+                        }
+                    });
+                });
+            });
+        }
+
+        enableNotificationsBtn.addEventListener('click', () => {
+            if ("Notification" in window) {
+                Notification.requestPermission().then(permission => {
+                    if (permission === "granted") {
+                        alert("عاش! الإشعارات اتفعلت وهيوصلك تنبيه في ميعاد الملاحظة.");
+                        enableNotificationsBtn.innerText = "✔️ الإشعارات مفعلة";
+                        enableNotificationsBtn.style.background = "#1dd1a1";
+                        enableNotificationsBtn.style.color = "white";
+                        enableNotificationsBtn.style.borderColor = "#1dd1a1";
+                    } else {
+                        alert("لازم توافق على صلاحية الإشعارات من المتصفح عشان المنبه يشتغل!");
+                    }
+                });
+            } else {
+                alert("المتصفح بتاعك مش بيدعم الإشعارات للأسف.");
+            }
+        });
+
+        function playAlarmSound() {
+            try {
+                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioCtx.createOscillator();
+                const gainNode = audioCtx.createGain();
+                oscillator.connect(gainNode);
+                gainNode.connect(audioCtx.destination);
+                oscillator.type = 'square'; 
+                oscillator.frequency.value = 800; 
+                gainNode.gain.setValueAtTime(1, audioCtx.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 1.5);
+                oscillator.start(audioCtx.currentTime);
+                oscillator.stop(audioCtx.currentTime + 1.5);
+            } catch(e) { console.log("الصوت مش مدعوم:", e); }
+        }
+
+        function startReminderChecker() {
+            setInterval(() => {
+                if(Notification.permission !== "granted") return;
+                const now = new Date().getTime();
+                
+                allNotesArray.forEach(note => {
+                    if (note.reminderTime && !note.notified) {
+                        const remTime = new Date(note.reminderTime).getTime();
+                        if (now >= remTime) {
+                            new Notification("⏰ تنبيه من ملاحظاتي", {
+                                body: note.title || "حان موعد تذكير إحدى الملاحظات!",
+                                icon: "./icon-192.png"
+                            });
+                            playAlarmSound();
+                            update(dbRef(db, `users_data/${userHash}/notes/${note.id}`), { notified: true });
+                        }
+                    }
+                });
+            }, 10000); 
+        }
+
+        exportBtn.addEventListener('click', async () => {
+            try {
+                exportBtn.innerText = '⏳ جاري التصدير...';
+                const snapshot = await get(notesRef);
+                if (snapshot.exists()) {
+                    const data = snapshot.val();
+                    const jsonString = JSON.stringify(data, null, 2);
+                    const blob = new Blob([jsonString], { type: "application/json" });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `notes_backup_${new Date().toISOString().split('T')[0]}.json`;
+                    a.click();
+                    URL.revokeObjectURL(url);
+                } else { alert("مفيش ملاحظات لتصديرها حالياً!"); }
+            } catch (error) { alert("حصل خطأ أثناء التصدير."); } finally { exportBtn.innerText = '📥 تصدير نسخة (Backup)'; }
+        });
+
+        importBtn.addEventListener('click', () => importInput.click());
+        importInput.addEventListener('change', async (e) => {
+            const files = e.target.files;
+            if (files.length === 0) return;
+            importBtn.innerText = '⏳ جاري الاستيراد...';
+            importBtn.disabled = true;
+            let importCount = 0;
+
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+                try {
+                    const text = await file.text();
+                    const importedData = JSON.parse(text);
+
+                    if (importedData.textContent !== undefined || importedData.listContent !== undefined) {
+                        if (importedData.isTrashed) continue; 
+                        let content = importedData.textContent || '';
+                        if (importedData.listContent) content = importedData.listContent.map(item => (item.isChecked ? '✅ ' : '❌ ') + item.text).join('\n');
+                        let color = 'default';
+                        if(importedData.color === 'RED') color = 'red';
+                        if(importedData.color === 'BLUE' || importedData.color === 'TEAL') color = 'blue';
+                        if(importedData.color === 'YELLOW') color = 'yellow';
+                        if(importedData.color === 'GREEN') color = 'green';
+
+                        let dateString = new Date().toLocaleDateString('ar-EG');
+                        let sortOrderValue = -new Date().getTime();
+                        if (importedData.userEditedTimestampUsec) {
+                            const keepDate = new Date(importedData.userEditedTimestampUsec / 1000);
+                            dateString = `${keepDate.toLocaleDateString('ar-EG')} - الساعة ${keepDate.toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' })}`;
+                            sortOrderValue = -(importedData.userEditedTimestampUsec / 1000);
+                        }
+
+                        await push(notesRef, {
+                            title: importedData.title || '', content: content, timestamp: dateString, score: 50, color: color,
+                            isPinned: importedData.isPinned || false, sortOrder: sortOrderValue, imageUrls: [], audioUrl: null,
+                            folderId: 'general'
+                        });
+                        importCount++;
+                    } else {
+                        let notesToImport = [];
+                        if (Array.isArray(importedData)) notesToImport = importedData;
+                        else if (typeof importedData === 'object') notesToImport = Object.values(importedData);
+
+                        for (let note of notesToImport) {
+                            await push(notesRef, {
+                                title: note.title || '', content: note.content || '', timestamp: note.timestamp || new Date().toLocaleDateString('ar-EG'),
+                                score: note.score || 50, color: note.color || 'default', isPinned: note.isPinned || false,
+                                sortOrder: note.sortOrder || -new Date().getTime(), imageUrl: note.imageUrl || null, imageUrls: note.imageUrls || [], 
+                                audioUrl: note.audioUrl || null, folderId: note.folderId || 'general', reminderTime: note.reminderTime || null, notified: note.notified || false
+                            });
+                            importCount++;
+                        }
+                    }
+                } catch (err) { console.error("متجاهل الملف ده عشان صيغته مش مفهومة:", file.name); }
+            }
+            if(importCount > 0) alert(`عاش! تم استيراد ${importCount} ملاحظة بنجاح.`);
+            else alert("ملقيناش بيانات صالحة للاستيراد في الملفات دي.");
+            importInput.value = ''; importBtn.innerText = '📤 استيراد (Keep / Backup)'; importBtn.disabled = false;
+        });
+
+        uploadImgBtn.addEventListener('click', () => { if(!editingNoteId) imageInput.click(); else alert("لا يمكن تغيير الصور أثناء وضع التعديل."); });
+        imageInput.addEventListener('change', (e) => {
+            selectedImageFiles = Array.from(e.target.files);
+            if(selectedImageFiles.length > 0) imgStatus.innerText = `✔️ تم إرفاق ${selectedImageFiles.length} صورة/صور`;
+            else imgStatus.innerText = '';
+        });
+
+        recordAudioBtn.addEventListener('click', async () => {
+            if(editingNoteId) { alert("لا يمكن تسجيل صوت أثناء وضع التعديل."); return; }
+            if (!isRecording) {
+                try {
+                    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                    mediaRecorder = new MediaRecorder(stream); mediaRecorder.start(); isRecording = true;
+                    recordAudioBtn.innerText = '🛑 إيقاف التسجيل'; recordAudioBtn.classList.add('recording'); audioChunks = [];
+                    mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
+                    mediaRecorder.onstop = () => { recordedAudioBlob = new Blob(audioChunks, { type: 'audio/webm' }); audioStatus.innerText = '✔️ تم إرفاق تسجيل صوتي'; };
+                } catch (err) { alert('يجب الموافقة على صلاحية المايكروفون!'); }
+            } else { mediaRecorder.stop(); isRecording = false; recordAudioBtn.innerText = '🎤 تسجيل صوتي'; recordAudioBtn.classList.remove('recording'); }
+        });
+
+        addBtn.addEventListener('click', async () => {
+            const title = noteTitleInput.value.trim();
+            const text = noteInput.value.trim();
+            const scoreValue = scoreInput.value;
+            const selectedFolderId = folderSelect.value;
+            const reminderVal = reminderInput.value;
+
+            if (title !== '' || text !== '' || selectedImageFiles.length > 0 || recordedAudioBlob) {
+                try {
+                    if (editingNoteId) {
+                        const now = new Date();
+                        const timeString = now.toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' });
+                        const dateString = now.toLocaleDateString('ar-EG');
+                        
+                        let updateData = {
+                            title: title, content: text, score: scoreValue, color: selectedNoteColor, folderId: selectedFolderId,
+                            timestamp: `${dateString} - الساعة ${timeString} (مُعدلة)`
+                        };
+                        
+                        if(reminderVal) { updateData.reminderTime = reminderVal; updateData.notified = false; }
+                        else { updateData.reminderTime = null; }
+
+                        await update(dbRef(db, `users_data/${userHash}/notes/${editingNoteId}`), updateData);
+                        editingNoteId = null; addBtn.classList.remove('edit-mode');
+                    } 
+                    else {
+                        addBtn.innerText = `⏳ جاري الحفظ والرفع...`; addBtn.disabled = true;
+                        let finalImageUrls = []; let audioUrl = null;
+
+                        if (selectedImageFiles.length > 0) {
+                            const uploadPromises = selectedImageFiles.map(async (file) => {
+                                const imgFileRef = storageRef(storage, `uploads/${userHash}/images/${Date.now()}_${file.name}`);
+                                await uploadBytes(imgFileRef, file); return await getDownloadURL(imgFileRef);
+                            });
+                            finalImageUrls = await Promise.all(uploadPromises);
+                        }
+
+                        if (recordedAudioBlob) {
+                            const audioFileRef = storageRef(storage, `uploads/${userHash}/audio/record_${Date.now()}.webm`);
+                            await uploadBytes(audioFileRef, recordedAudioBlob); audioUrl = await getDownloadURL(audioFileRef);
+                        }
+
+                        const now = new Date();
+                        const timeString = now.toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' });
+                        const dateString = now.toLocaleDateString('ar-EG');
+
+                        await push(notesRef, {
+                            title: title, content: text, timestamp: `${dateString} - الساعة ${timeString}`, score: scoreValue, 
+                            color: selectedNoteColor, isPinned: false, sortOrder: -now.getTime(), imageUrls: finalImageUrls, audioUrl: audioUrl,
+                            folderId: selectedFolderId, reminderTime: reminderVal || null, notified: false
+                        });
+                    }
+                    resetInputs();
+                } catch (error) { console.error("حدث خطأ:", error); alert("حصل مشكلة أثناء الحفظ! تأكد من النت."); } 
+                finally { addBtn.innerText = 'إضافة الملاحظة ✨'; addBtn.disabled = false; }
+            } else { alert("اكتب عنوان أو محتوى للملاحظة عشان تتحفظ!"); }
+        });
+
+        function resetInputs() {
+            noteTitleInput.value = ''; noteInput.value = ''; scoreInput.value = 50; scoreDisplay.innerText = '50%';
+            selectedImageFiles = []; recordedAudioBlob = null; imageInput.value = ''; imgStatus.innerText = ''; audioStatus.innerText = '';
+            reminderInput.value = ''; 
+            resetColorPalette();
+        }
+
+        function generateMediaHTML(noteData) {
+            let html = ''; let allImages = [];
+            if(noteData.imageUrl) allImages.push(noteData.imageUrl);
+            if(noteData.imageUrls && noteData.imageUrls.length > 0) allImages = allImages.concat(noteData.imageUrls);
+            if (allImages.length === 1) html += `<img src="${allImages[0]}" class="single-image" alt="مرفق صورة">`;
+            else if (allImages.length > 1) { html += `<div class="image-gallery">`; allImages.forEach(url => { html += `<img src="${url}" class="note-image" alt="مرفق صورة">`; }); html += `</div>`; }
+            if (noteData.audioUrl) html += `<audio controls src="${noteData.audioUrl}" class="note-audio"></audio>`;
+            return html;
+        }
+
+        function openNoteModal(noteData) {
+            if(noteData.color && noteData.color !== 'default') modalCard.setAttribute('data-color', noteData.color); else modalCard.removeAttribute('data-color');
+            const mediaHTML = generateMediaHTML(noteData);
+            let reminderTxt = '';
+            if(noteData.reminderTime) {
+                const rDate = new Date(noteData.reminderTime);
+                reminderTxt = `<span class="reminder-badge">⏰ تذكير: ${rDate.toLocaleString('ar-EG')}</span>`;
+            }
+            modalBody.innerHTML = `
+                ${noteData.title ? `<div class="note-title-display">${escapeHTML(noteData.title)}</div>` : ''}
+                ${mediaHTML}
+                ${noteData.content ? `<div class="note-content">${escapeHTML(noteData.content)}</div>` : ''}
+                <div class="note-meta" style="margin-top: 25px; padding-top: 20px; border-top: 2px dashed var(--border-color);">
+                    <span style="color: var(--time-color)">🕒 ${noteData.timestamp}</span>
+                    <span class="score-badge">⭐ ${noteData.score ? noteData.score+'%' : 'بدون تقييم'}</span>
+                    ${reminderTxt}
+                </div>
+            `;
+            noteModal.style.display = 'flex';
+        }
+
+        function loadNotes() {
+            onValue(notesRef, (snapshot) => {
+                const data = snapshot.val();
+                if (data) {
+                    allNotesArray = Object.keys(data).map(key => ({ id: key, ...data[key] }));
+                } else {
+                    allNotesArray = [];
+                }
+                renderNotes(); 
+            });
+        }
+
+        function renderNotes() {
+            notesList.innerHTML = '';
+            let filteredNotes = allNotesArray.filter(note => currentFolderFilter === 'all' || (note.folderId || 'general') === currentFolderFilter);
+
+            filteredNotes.sort((a, b) => {
+                if (a.isPinned && !b.isPinned) return -1;
+                if (!a.isPinned && b.isPinned) return 1;
+                return a.sortOrder - b.sortOrder;
+            });
+
+            filteredNotes.forEach(note => {
+                const li = document.createElement('li');
+                if(note.isPinned) li.classList.add('pinned-note');
+                if(note.color && note.color !== 'default') li.setAttribute('data-color', note.color);
+                
+                li.draggable = true;
+                li.addEventListener('dragstart', function() { draggedId = note.id; draggedSortOrder = note.sortOrder; this.style.opacity = '0.5'; });
+                li.addEventListener('dragover', e => e.preventDefault());
+                li.addEventListener('drop', function(e) {
+                    e.preventDefault(); this.style.opacity = '1';
+                    if(draggedId && draggedId !== note.id) {
+                        update(dbRef(db, `users_data/${userHash}/notes/${draggedId}`), { sortOrder: note.sortOrder });
+                        update(dbRef(db, `users_data/${userHash}/notes/${note.id}`), { sortOrder: draggedSortOrder });
+                    }
+                });
+                li.addEventListener('dragend', function() { this.style.opacity = '1'; });
+
+                li.addEventListener('click', (e) => {
+                    if(e.target.tagName.toLowerCase() === 'button' || e.target.closest('button')) return;
+                    openNoteModal(note);
+                });
+
+                const mediaHTML = generateMediaHTML(note);
+                const copyText = (note.title ? note.title + '\n\n' : '') + (note.content || '');
+
+                let reminderTxt = '';
+                if(note.reminderTime) {
+                    const rDate = new Date(note.reminderTime);
+                    reminderTxt = `<span class="reminder-badge" title="منبه مفعل">⏰ ${rDate.toLocaleTimeString('ar-EG', {hour:'2-digit', minute:'2-digit'})}</span>`;
+                }
+
+                li.innerHTML = `
+                    ${note.title ? `<div class="note-title-display">${escapeHTML(note.title)}</div>` : ''}
+                    ${mediaHTML}
+                    ${note.content ? `<div class="note-content">${escapeHTML(note.content)}</div>` : ''}
+                    <div class="note-footer">
+                        <div class="note-meta">
+                            <span>🕒 ${note.timestamp}</span>
+                            <span class="score-badge">⭐ ${note.score ? note.score+'%' : 'بدون تقييم'}</span>
+                            ${reminderTxt}
+                        </div>
+                        <div class="action-buttons">
+                            <button class="copy-btn" data-content="${escapeHTML(copyText)}">📋 نسخ</button>
+                            <button class="pin-btn ${note.isPinned ? 'active' : ''}" data-id="${note.id}" data-pinned="${note.isPinned || false}">${note.isPinned ? 'إلغاء' : 'تثبيت'}</button>
+                            <button class="edit-btn" data-id="${note.id}" data-title="${escapeHTML(note.title || '')}" data-content="${escapeHTML(note.content || '')}" data-score="${note.score || 50}" data-color="${note.color || 'default'}" data-folder="${note.folderId || 'general'}" data-reminder="${note.reminderTime || ''}">تعديل</button>
+                            <button class="delete-btn" data-id="${note.id}">حذف</button>
+                        </div>
+                    </div>
+                `;
+                notesList.appendChild(li);
+            });
+
+            document.querySelectorAll('.copy-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const textToCopy = e.target.getAttribute('data-content');
+                    if(textToCopy) {
+                        navigator.clipboard.writeText(textToCopy).then(() => {
+                            const originalText = e.target.innerText; e.target.innerText = '✔️ تم النسخ'; e.target.style.background = '#20c997'; e.target.style.color = 'white';
+                            setTimeout(() => { e.target.innerText = originalText; e.target.style.background = ''; e.target.style.color = ''; }, 2000);
+                        }).catch(err => alert("حدث خطأ أثناء النسخ."));
+                    } else alert("لا يوجد نص لنسخه!");
+                });
+            });
+
+            document.querySelectorAll('.pin-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => { update(dbRef(db, `users_data/${userHash}/notes/${e.target.dataset.id}`), { isPinned: !(e.target.dataset.pinned === 'true') }); });
+            });
+
+            document.querySelectorAll('.edit-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    editingNoteId = e.target.dataset.id;
+                    noteTitleInput.value = e.target.dataset.title !== 'undefined' ? e.target.dataset.title : '';
+                    noteInput.value = e.target.dataset.content !== 'undefined' ? e.target.dataset.content : '';
+                    scoreInput.value = e.target.dataset.score; scoreDisplay.innerText = scoreInput.value + '%';
+                    
+                    folderSelect.value = e.target.dataset.folder;
+                    reminderInput.value = e.target.dataset.reminder; 
+
+                    const savedColor = e.target.dataset.color;
+                    colorCircles.forEach(c => c.classList.remove('active'));
+                    document.querySelector(`.color-circle[data-color="${savedColor}"]`).classList.add('active');
+                    selectedNoteColor = savedColor;
+                    
+                    addBtn.innerText = 'حفظ التعديلات ✨'; addBtn.classList.add('edit-mode');
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                });
+            });
+
+            document.querySelectorAll('.delete-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const idToDel = e.target.dataset.id; remove(dbRef(db, `users_data/${userHash}/notes/${idToDel}`));
+                    if(editingNoteId === idToDel) { editingNoteId = null; resetInputs(); addBtn.innerText = 'إضافة الملاحظة ✨'; addBtn.classList.remove('edit-mode'); }
+                });
+            });
+        }
+
+        function escapeHTML(str) {
+            if(!str) return '';
+            return str.replace(/[&<>'"]/g, tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag]));
+        }
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a08467cea8e17154',t:'MTc4MDg4NTEwMQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>

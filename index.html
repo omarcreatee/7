@@ -128,7 +128,7 @@
         /* ستايل شريط البحث اللي جوه المودال (ثابت من فوق) */
         .search-nav-modal {
             position: sticky;
-            top: -10px;
+            top: 10px;
             z-index: 100;
             display: flex;
             justify-content: center;
@@ -203,6 +203,22 @@
         });
       }
     </script>
+
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <link rel="manifest" href="./manifest.json?v=v1786100192103">
+    <meta name="theme-color" content="#ae7db5">
+    <link rel="apple-touch-icon" href="./icon-192.png?v=v1786100192103">
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('./sw.js?v=v1786100192103')
+            .then(reg => console.log('SW Registered'))
+            .catch(err => console.log('SW Failed', err));
+        });
+      }
+    </script>
 </head>
 <body>
 
@@ -210,6 +226,11 @@
         <div class="modal-content" id="modalCard">
             <span class="close-modal" id="closeModal">&times;</span>
             
+            <!-- شريط البحث اللي ضفناه جوه الملاحظة المفتوحة -->
+            <div class="search-wrapper" style="margin-top: 40px; margin-bottom: 25px;">
+                <input type="text" id="modalSearchInput" placeholder="🔍 ابحث في العناوين أو المحتوى بسهولة...">
+            </div>
+
             <!-- أزرار البحث ثابتة هنا جوة الملاحظة -->
             <div class="search-nav-modal" id="searchNav" style="display: none;">
                 <span id="searchCount">0/0</span>
@@ -366,6 +387,7 @@
         const bgMusic = document.getElementById('bgMusic');
 
         const searchInput = document.getElementById('searchInput');
+        const modalSearchInput = document.getElementById('modalSearchInput'); // تعريف حقل بحث المودال
         const searchNav = document.getElementById('searchNav');
         const searchCount = document.getElementById('searchCount');
         const searchPrev = document.getElementById('searchPrev');
@@ -416,6 +438,7 @@
         
         let highlightElements = [];
         let currentHighlightIndex = -1;
+        let currentOpenedNote = null; // متغير يمسك الملاحظة اللي مفتوحة دلوقتي
 
         if (userHash) {
             notesRef = dbRef(db, `users_data/${userHash}/notes`);
@@ -484,11 +507,13 @@
 
         closeModal.addEventListener('click', () => { 
             noteModal.style.display = 'none'; 
+            currentOpenedNote = null; // تفريغ بعد القفل
             updateSearchNavigation();
         });
         window.addEventListener('click', (e) => { 
             if(e.target === noteModal) {
                 noteModal.style.display = 'none';
+                currentOpenedNote = null; // تفريغ بعد القفل
                 updateSearchNavigation();
             }
         });
@@ -510,6 +535,11 @@
 
         searchInput.addEventListener('input', (e) => {
             renderNotes();
+        });
+
+        // تشغيل البحث لحظياً لما بتكتب جوه شريط المودال
+        modalSearchInput.addEventListener('input', () => {
+            renderModalContent();
         });
 
         scoreInput.addEventListener('input', function() { scoreDisplay.innerText = this.value + '%'; });
@@ -838,12 +868,12 @@
             }).join('');
         }
         
-        // التعديل هنا: دالة التنقل شغالة بس على المودال المفتوح (الملاحظة من جوة)
         function updateSearchNavigation() {
             if (noteModal.style.display === 'flex') {
                 highlightElements = Array.from(modalBody.querySelectorAll('mark.highlight'));
                 
-                if (highlightElements.length > 0 && searchInput.value.trim() !== '') {
+                // تم التعديل للاعتماد على الشريط الداخلي modalSearchInput
+                if (highlightElements.length > 0 && modalSearchInput.value.trim() !== '') {
                     searchNav.style.display = 'flex';
                     currentHighlightIndex = 0;
                     updateHighlightFocus();
@@ -885,27 +915,36 @@
             updateHighlightFocus();
         });
 
-        function openNoteModal(noteData) {
-            const searchTerm = searchInput.value.trim();
-            if(noteData.color && noteData.color !== 'default') modalCard.setAttribute('data-color', noteData.color); else modalCard.removeAttribute('data-color');
-            const mediaHTML = generateMediaHTML(noteData);
+        // تم فصل عملية بناء محتوى المودال عشان تتحدث مع البحث الداخلي
+        function renderModalContent() {
+            if (!currentOpenedNote) return;
+            const searchTerm = modalSearchInput.value.trim();
+            if(currentOpenedNote.color && currentOpenedNote.color !== 'default') modalCard.setAttribute('data-color', currentOpenedNote.color); else modalCard.removeAttribute('data-color');
+            const mediaHTML = generateMediaHTML(currentOpenedNote);
             let reminderTxt = '';
-            if(noteData.reminderTime) {
-                const rDate = new Date(noteData.reminderTime);
+            if(currentOpenedNote.reminderTime) {
+                const rDate = new Date(currentOpenedNote.reminderTime);
                 reminderTxt = `<span class="reminder-badge">⏰ تذكير: ${rDate.toLocaleString('ar-EG')}</span>`;
             }
             modalBody.innerHTML = `
-                ${noteData.title ? `<div class="note-title-display">${highlightText(noteData.title, searchTerm)}</div>` : ''}
+                ${currentOpenedNote.title ? `<div class="note-title-display">${highlightText(currentOpenedNote.title, searchTerm)}</div>` : ''}
                 ${mediaHTML}
-                ${noteData.content ? `<div class="note-content">${highlightText(noteData.content, searchTerm)}</div>` : ''}
+                ${currentOpenedNote.content ? `<div class="note-content">${highlightText(currentOpenedNote.content, searchTerm)}</div>` : ''}
                 <div class="note-meta" style="margin-top: 25px; padding-top: 20px; border-top: 2px dashed var(--border-color);">
-                    <span style="color: var(--time-color)">🕒 ${noteData.timestamp}</span>
-                    <span class="score-badge">⭐ ${noteData.score ? noteData.score+'%' : 'بدون تقييم'}</span>
+                    <span style="color: var(--time-color)">🕒 ${currentOpenedNote.timestamp}</span>
+                    <span class="score-badge">⭐ ${currentOpenedNote.score ? currentOpenedNote.score+'%' : 'بدون تقييم'}</span>
                     ${reminderTxt}
                 </div>
             `;
-            noteModal.style.display = 'flex';
             updateSearchNavigation();
+        }
+
+        function openNoteModal(noteData) {
+            currentOpenedNote = noteData;
+            // عشان لو كنت بتبحث برة، يكمل بحث بيها جوه
+            modalSearchInput.value = searchInput.value.trim();
+            renderModalContent();
+            noteModal.style.display = 'flex';
         }
 
         function loadNotes() {

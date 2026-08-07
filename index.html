@@ -156,6 +156,35 @@
         .search-nav-modal button:hover { transform: scale(1.15); background: var(--primary-hover); }
         #searchCount { font-size: 18px; font-weight: 900; color: var(--text-color); direction: ltr; min-width: 50px; text-align: center;}
 
+        /* أزرار الصعود والنزول داخل الملاحظة */
+        .modal-scroll-btns {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            z-index: 1100;
+        }
+        .modal-scroll-btns button {
+            background: var(--primary);
+            color: #fff;
+            border: 2px solid var(--border-color);
+            width: 50px; height: 50px;
+            border-radius: 50%;
+            font-size: 20px;
+            cursor: pointer;
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+        .modal-scroll-btns button:hover {
+            transform: scale(1.15) translateY(-5px);
+            background: var(--primary-hover);
+        }
     </style>
 
     
@@ -207,13 +236,13 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
-    <link rel="manifest" href="./manifest.json?v=v1786100192103">
-    <meta name="theme-color" content="#ae7db5">
-    <link rel="apple-touch-icon" href="./icon-192.png?v=v1786100192103">
+    <link rel="manifest" href="./manifest.json?v=v1786100719710">
+    <meta name="theme-color" content="#8e75bd">
+    <link rel="apple-touch-icon" href="./icon-192.png?v=v1786100719710">
     <script>
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
-          navigator.serviceWorker.register('./sw.js?v=v1786100192103')
+          navigator.serviceWorker.register('./sw.js?v=v1786100719710')
             .then(reg => console.log('SW Registered'))
             .catch(err => console.log('SW Failed', err));
         });
@@ -223,6 +252,12 @@
 <body>
 
     <div id="noteModal" class="modal-overlay">
+        <!-- أزرار الصعود والنزول الثابتة داخل المودال -->
+        <div class="modal-scroll-btns">
+            <button id="scroll-to-top-btn" onclick="scrollToTop()" title="الصعود لأعلى الشات">⬆️</button>
+            <button id="scroll-to-bottom-btn" onclick="scrollToBottom()" title="النزول لأسفل الشات">⬇️</button>
+        </div>
+
         <div class="modal-content" id="modalCard">
             <span class="close-modal" id="closeModal">&times;</span>
             
@@ -323,7 +358,7 @@
                     <div class="color-circle color-default active" data-color="default" title="افتراضي"></div>
                     <div class="color-circle color-red" data-color="red" title="أحمر (مهم)"></div>
                     <div class="color-circle color-blue" data-color="blue" title="أزرق (عمل)"></div>
-                    <div class="color-circle color-yellow" data-color="yellow" title="أصفر (أفكار)"></div>
+                    <div class="color-circle color-yellow" data-color="yellow" title="أفكار (أفكار)"></div>
                     <div class="color-circle color-green" data-color="green" title="أخضر (منجز)"></div>
                 </div>
 
@@ -372,6 +407,21 @@
         const db = getDatabase(app);
         const storage = getStorage(app);
         
+        // دوال النزول والصعود ربطناها بـ window عشان الـ onclick في الـ HTML يقرأها جوا الـ module
+        window.scrollToTop = () => {
+            const modalCard = document.getElementById('modalCard');
+            if (document.getElementById('noteModal').style.display === 'flex') {
+                modalCard.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        };
+
+        window.scrollToBottom = () => {
+            const modalCard = document.getElementById('modalCard');
+            if (document.getElementById('noteModal').style.display === 'flex') {
+                modalCard.scrollTo({ top: modalCard.scrollHeight, behavior: 'smooth' });
+            }
+        };
+
         let userHash = localStorage.getItem('userHash') || '';
         let notesRef;
         let foldersRef;
@@ -387,7 +437,7 @@
         const bgMusic = document.getElementById('bgMusic');
 
         const searchInput = document.getElementById('searchInput');
-        const modalSearchInput = document.getElementById('modalSearchInput'); // تعريف حقل بحث المودال
+        const modalSearchInput = document.getElementById('modalSearchInput'); 
         const searchNav = document.getElementById('searchNav');
         const searchCount = document.getElementById('searchCount');
         const searchPrev = document.getElementById('searchPrev');
@@ -438,7 +488,7 @@
         
         let highlightElements = [];
         let currentHighlightIndex = -1;
-        let currentOpenedNote = null; // متغير يمسك الملاحظة اللي مفتوحة دلوقتي
+        let currentOpenedNote = null; 
 
         if (userHash) {
             notesRef = dbRef(db, `users_data/${userHash}/notes`);
@@ -507,13 +557,13 @@
 
         closeModal.addEventListener('click', () => { 
             noteModal.style.display = 'none'; 
-            currentOpenedNote = null; // تفريغ بعد القفل
+            currentOpenedNote = null; 
             updateSearchNavigation();
         });
         window.addEventListener('click', (e) => { 
             if(e.target === noteModal) {
                 noteModal.style.display = 'none';
-                currentOpenedNote = null; // تفريغ بعد القفل
+                currentOpenedNote = null; 
                 updateSearchNavigation();
             }
         });
@@ -537,7 +587,6 @@
             renderNotes();
         });
 
-        // تشغيل البحث لحظياً لما بتكتب جوه شريط المودال
         modalSearchInput.addEventListener('input', () => {
             renderModalContent();
         });
@@ -848,9 +897,6 @@
             return html;
         }
 
-        // =========================================
-        // دوال مساعدة لعمل الهايلايت والتنقل
-        // =========================================
         function escapeRegExp(string) {
             return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
         }
@@ -872,7 +918,6 @@
             if (noteModal.style.display === 'flex') {
                 highlightElements = Array.from(modalBody.querySelectorAll('mark.highlight'));
                 
-                // تم التعديل للاعتماد على الشريط الداخلي modalSearchInput
                 if (highlightElements.length > 0 && modalSearchInput.value.trim() !== '') {
                     searchNav.style.display = 'flex';
                     currentHighlightIndex = 0;
@@ -915,7 +960,6 @@
             updateHighlightFocus();
         });
 
-        // تم فصل عملية بناء محتوى المودال عشان تتحدث مع البحث الداخلي
         function renderModalContent() {
             if (!currentOpenedNote) return;
             const searchTerm = modalSearchInput.value.trim();
@@ -941,7 +985,6 @@
 
         function openNoteModal(noteData) {
             currentOpenedNote = noteData;
-            // عشان لو كنت بتبحث برة، يكمل بحث بيها جوه
             modalSearchInput.value = searchInput.value.trim();
             renderModalContent();
             noteModal.style.display = 'flex';
